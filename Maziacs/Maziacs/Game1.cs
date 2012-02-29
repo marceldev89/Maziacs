@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 #if DEBUG
 using System.Diagnostics;
 #endif
@@ -15,9 +16,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Advertising.Mobile.Xna;
-#if DEBUG
 using Microsoft.Phone.Info;
-#endif
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.Shell;
 using Polenter.Serialization;
@@ -1273,6 +1272,28 @@ namespace Maziacs
                         buttons.Add("No");
                         Guide.BeginShowMessageBox("Review", "Would you like to review this game?", buttons, 0, MessageBoxIcon.Alert, DoReview, null);
                     }
+                }
+
+                // Get anonymous user ID
+                bool networkAvailable;
+                string anid;
+                string anonymousUserId;
+                string parameters;
+                Uri uri;
+
+                anid = UserExtendedProperties.GetValue("ANID") as string;
+                networkAvailable = Microsoft.Phone.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable();
+
+                if (anid != null && networkAvailable)
+                {
+                    anonymousUserId = anid.Substring(2, 32);
+
+                    uri = new Uri("http://my89.nl/data/collect.php");
+                    parameters = string.Format("app={0}&version={1}&id={2}", GameSettings.GameName, GameSettings.GameVersion, anonymousUserId);
+
+                    WebClient webClient = new WebClient();
+                    webClient.Headers["Content-type"] = "application/x-www-form-urlencoded";
+                    webClient.UploadStringAsync(uri, parameters);
                 }
 
                 gameIsLaunched = false;
