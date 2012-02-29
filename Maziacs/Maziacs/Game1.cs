@@ -21,6 +21,7 @@ using Microsoft.Phone.Info;
 using Microsoft.Phone.Tasks;
 using Microsoft.Phone.Shell;
 using Polenter.Serialization;
+using AdDuplex.Xna;
 
 namespace Maziacs
 {
@@ -194,6 +195,9 @@ namespace Maziacs
 
         static AdGameComponent adGameComponent;
         static DrawableAd bannerAd;
+
+        AdManager adDuplex;
+        bool adDuplexIsActive;
 
         Texture2D logoTexture;
         Texture2D backgroundTexture;
@@ -593,6 +597,9 @@ namespace Maziacs
 #endif
             bannerAd.ErrorOccurred += new EventHandler<Microsoft.Advertising.AdErrorEventArgs>(bannerAd_ErrorOccurred);
             bannerAd.AdRefreshed += new EventHandler(bannerAd_AdRefreshed);
+
+            adDuplex = new AdManager(this, "8831");
+            adDuplex.LoadContent();
 
             backgroundTexture = Content.Load<Texture2D>("background");
             logoTexture = Content.Load<Texture2D>("logo");
@@ -2347,6 +2354,11 @@ namespace Maziacs
         {
             RetryAdCreation(gameTime);
 
+            if (adDuplexIsActive)
+            {
+                adDuplex.Update(gameTime);
+            }
+
 #if DEBUG
             if (gameTime.IsRunningSlowly == true)
             {
@@ -3052,6 +3064,11 @@ namespace Maziacs
                     break;
             }
 
+            if (adDuplexIsActive)
+            {
+                adDuplex.Draw(spriteBatch, new Vector2(0, 0));
+            }
+
             base.Draw(gameTime);            
         }
 
@@ -3064,7 +3081,7 @@ namespace Maziacs
         {
             if (retryAdCreation == true)
             {
-                if (adTimeout >= 90000)
+                if (adTimeout >= 120000)
                 {
                     bannerAd = adGameComponent.CreateAd("81067", new Rectangle(0, 0, 480, 80), true);
 
@@ -3073,6 +3090,7 @@ namespace Maziacs
 
                     adTimeout = 0;
                 }
+
                 adTimeout += (int)gameTime.ElapsedGameTime.TotalMilliseconds;
             }
             else
@@ -3085,15 +3103,20 @@ namespace Maziacs
 
         void bannerAd_AdRefreshed(object sender, EventArgs e)
         {
+            bannerAd.Visible = true;
+            adDuplex.Visible = false;
+
             retryAdCreation = false;
+            adDuplexIsActive = false;
         }
 
         void bannerAd_ErrorOccurred(object sender, Microsoft.Advertising.AdErrorEventArgs e)
         {
+            bannerAd.Visible = false;
+            adDuplex.Visible = true;
+
             retryAdCreation = true;
-#if DEBUG
-            Debug.WriteLine("Ad error: {0}", e.Error.Message);
-#endif
+            adDuplexIsActive = true;
         }
     }
 }
