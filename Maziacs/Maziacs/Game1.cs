@@ -1288,7 +1288,7 @@ namespace Maziacs
                 {
                     anonymousUserId = anid.Substring(2, 32);
 
-                    uri = new Uri("http://my89.nl/data/collect.php");
+                    uri = new Uri("http://my89.nl/analytics/update.php");
                     parameters = string.Format("app={0}&version={1}&id={2}", GameSettings.GameName, GameSettings.GameVersion, anonymousUserId);
 
                     WebClient webClient = new WebClient();
