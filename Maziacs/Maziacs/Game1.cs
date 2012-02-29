@@ -27,7 +27,7 @@ namespace Maziacs
     public static class GameSettings
     {
         public const string GameName = "Maziacs";
-        public const string GameVersion = "1.1";
+        public const string GameVersion = "1.2";
 
         public static int[] Swords = { 1053, 928, 803 };
         public static int[] Prisoners = { 951, 826, 701 };
