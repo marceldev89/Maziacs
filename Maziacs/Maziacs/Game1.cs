@@ -27,7 +27,7 @@ namespace Maziacs
     public static class GameSettings
     {
         public const string GameName = "Maziacs";
-        public const string GameVersion = "1.2";
+        public const string GameVersion = "1.3";
 
         public static int[] Swords = { 1053, 928, 803 };
         public static int[] Prisoners = { 951, 826, 701 };
@@ -598,6 +598,9 @@ namespace Maziacs
             bannerAd.AdRefreshed += new EventHandler(bannerAd_AdRefreshed);
 
             adDuplex = new AdManager(this, "8831");
+#if DEBUG
+            adDuplex.IsTest = true;
+#endif
             adDuplex.LoadContent();
 
             backgroundTexture = Content.Load<Texture2D>("background");
@@ -2066,7 +2069,7 @@ namespace Maziacs
             {
                 if (fightAnimation.Active == true)
                 {
-                    if (fightCounter > 108 && player.HasSword == true)
+                    if (fightCounter > 90 && player.HasSword == true)
                     {
                         playerAnimation.Active = true;
                         player.HasSword = false;
@@ -2081,7 +2084,7 @@ namespace Maziacs
                         winAnimation.Position = player.Position;
                         winAnimation.Update(gameTime);
                     }
-                    else if (fightCounter > 216 && player.HasSword == false)
+                    else if (fightCounter > 135 && player.HasSword == false)
                     {
                         fightCounter = 0;
                         fightAnimation.Active = false;
@@ -2130,7 +2133,7 @@ namespace Maziacs
                 }
                 else
                 {
-                    if (fightCounter > 60)
+                    if (fightCounter > 45)
                     {
                         if (faith == 1)
                         {
@@ -2192,6 +2195,26 @@ namespace Maziacs
 
         private void UpdateGameOver(GameTime gameTime)
         {
+            // Remove savegame on game end
+            if (gameLoaded)
+            {
+                IsolatedStorageFile myStore = IsolatedStorageFile.GetUserStoreForApplication();
+
+                if (myStore.FileExists("maze.lvl"))
+                {
+                    myStore.DeleteFile("maze.lvl");
+                }
+
+                if (myStore.FileExists("savegame.sav"))
+                {
+                    myStore.DeleteFile("savegame.sav");
+                }
+
+                gameLoaded = false;
+                saveGameAvailable = false;
+            }
+
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
                 if (gameState == GameState.Instructions)
@@ -2238,6 +2261,25 @@ namespace Maziacs
 
         private void UpdateGameWon(GameTime gameTime)
         {
+            // Remove savegame on game end
+            if (gameLoaded)
+            {
+                IsolatedStorageFile myStore = IsolatedStorageFile.GetUserStoreForApplication();
+
+                if (myStore.FileExists("maze.lvl"))
+                {
+                    myStore.DeleteFile("maze.lvl");
+                }
+
+                if (myStore.FileExists("savegame.sav"))
+                {
+                    myStore.DeleteFile("savegame.sav");
+                }
+
+                gameLoaded = false;
+                saveGameAvailable = false;
+            }
+            
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             {
                 if (gameState == GameState.Instructions)
