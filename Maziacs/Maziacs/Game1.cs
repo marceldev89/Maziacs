@@ -1266,14 +1266,17 @@ namespace Maziacs
             {
                 gamesLaunched++;
 
-                if (gamesLaunched == 2 || gamesLaunched == 5 || gamesLaunched == 10)
+                if (!gameIsReviewed)
                 {
-                    if (!Guide.IsVisible)
+                    if (gamesLaunched == 2 || gamesLaunched == 5 || gamesLaunched == 10)
                     {
-                        List<string> buttons = new List<string>();
-                        buttons.Add("Yes");
-                        buttons.Add("No");
-                        Guide.BeginShowMessageBox("Review", "Would you like to review this game?", buttons, 0, MessageBoxIcon.Alert, DoReview, null);
+                        if (!Guide.IsVisible)
+                        {
+                            List<string> buttons = new List<string>();
+                            buttons.Add("Yes");
+                            buttons.Add("No");
+                            Guide.BeginShowMessageBox("Review", "Would you like to review this game?", buttons, 0, MessageBoxIcon.Alert, DoReview, null);
+                        }
                     }
                 }
 
